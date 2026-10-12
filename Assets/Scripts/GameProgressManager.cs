@@ -9,8 +9,18 @@ public static class GameProgressManager
     public static void SetLevelCompleted(int levelIndex, int coins, int time, bool isCompleted = true)
     {
         PlayerPrefs.SetInt(LevelPrefix + levelIndex, isCompleted ? 1 : 0);
-        PlayerPrefs.SetInt(LevelCoinsPrefix + levelIndex, coins);
-        PlayerPrefs.SetInt(LevelTimePrefix + levelIndex, time);
+
+        int savedCoins = GetLevelCoins(levelIndex);
+        if(!PlayerPrefs.HasKey(LevelCoinsPrefix + levelIndex) || coins > savedCoins)
+        {
+            PlayerPrefs.SetInt(LevelCoinsPrefix + levelIndex, coins);
+        }
+
+        int savedTime = GetLevelTime(levelIndex);
+        if(!PlayerPrefs.HasKey(LevelTimePrefix + levelIndex) || time < savedTime)
+        {
+            PlayerPrefs.SetInt(LevelTimePrefix + levelIndex, time);
+        }
         PlayerPrefs.Save();
     }
 

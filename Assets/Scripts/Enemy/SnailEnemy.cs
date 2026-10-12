@@ -101,6 +101,14 @@ public class SnailEnemy : Enemy
         State = SnailStates.hide;
     }
 
+    public override void TakeDamage(int damage)
+    {
+        if (State != SnailStates.hide)
+        {
+            base.TakeDamage(damage);
+        }
+    }
+
     protected override void Die()
     {
         Debug.Log("Die method");

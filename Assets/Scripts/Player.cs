@@ -187,12 +187,15 @@ public class Player : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
-        if(isInvincible)
+        Debug.Log($"TakeDamage called. isInvincible = {isInvincible}");
+
+        if (isInvincible)
         {
             return;
         }
 
         currentHealth -= damage;
+        Debug.Log($"Health after damage: {currentHealth}");
         UIManagerInGame.Instance.UpdateHealth(currentHealth);
 
         if (currentHealth <= 0)

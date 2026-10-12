@@ -41,7 +41,7 @@ public abstract class Enemy : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
-    protected virtual void OnCollisionEnter2D(Collision2D collision)
+    protected virtual void OnCollisionStay2D(Collision2D collision)
     {
         Debug.Log("Tag is " +  collision.gameObject.tag);
         if(collision.gameObject.CompareTag("Player"))
