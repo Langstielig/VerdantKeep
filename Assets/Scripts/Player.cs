@@ -189,7 +189,7 @@ public class Player : MonoBehaviour
     {
         Debug.Log($"TakeDamage called. isInvincible = {isInvincible}");
 
-        if (isInvincible)
+        if (isInvincible || isDying)
         {
             return;
         }
@@ -229,6 +229,8 @@ public class Player : MonoBehaviour
 
     private void Die()
     {
+        Debug.Log("Player died");
+
         State = States.die;
         isDying = true;
 
@@ -271,6 +273,8 @@ public class Player : MonoBehaviour
 
     private IEnumerator DieAnimation()
     {
+        Debug.Log("Die animation, current State is " + State);
+
         yield return new WaitForSeconds(1f);
 
         UIManagerInGame.Instance.ShowDeathScreen();
