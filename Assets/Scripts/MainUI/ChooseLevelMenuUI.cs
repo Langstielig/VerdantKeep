@@ -13,7 +13,7 @@ public class ChooseLevelMenuUI : MenuUI
         InitializeLevelButtons();
         levelButtons[0].levelButton.onClick.AddListener(() => OnLevelClicked(4));
         levelButtons[1].levelButton.onClick.AddListener(() => OnLevelClicked(5));
-        levelButtons[2].levelButton.onClick.AddListener(() => OnLevelClicked(6));
+        //levelButtons[2].levelButton.onClick.AddListener(() => OnLevelClicked(6));
         backButton.onClick.AddListener(OnBackClicked);
     }
 
