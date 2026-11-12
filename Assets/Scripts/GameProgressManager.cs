@@ -5,6 +5,8 @@ public static class GameProgressManager
     private const string LevelPrefix = "Level_";
     private const string LevelCoinsPrefix = "LevelCoins_";
     private const string LevelTimePrefix = "LevelTime_";
+    private const string MusicPrefix = "MusicVolume";
+    private const string SFXPrefix = "SFXVolume";
 
     public static void SetLevelCompleted(int levelIndex, int coins, int time, bool isCompleted = true)
     {
@@ -48,5 +50,27 @@ public static class GameProgressManager
             PlayerPrefs.DeleteKey(LevelTimePrefix + i);
         }
         PlayerPrefs.Save();
+    }
+
+    public static void SetMusicVolume(float value)
+    {
+        PlayerPrefs.SetFloat(MusicPrefix, value);
+        PlayerPrefs.Save();
+    }
+
+    public static void SetSFXVolume(float value)
+    {
+        PlayerPrefs.SetFloat(SFXPrefix, value);
+        PlayerPrefs.Save();
+    }
+
+    public static float GetMusicVolume()
+    {
+        return PlayerPrefs.GetFloat(MusicPrefix, 1);
+    }
+
+    public static float GetSFXVolume()
+    {
+        return PlayerPrefs.GetFloat(SFXPrefix, 1);
     }
 }

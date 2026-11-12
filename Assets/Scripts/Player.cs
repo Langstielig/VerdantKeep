@@ -17,11 +17,15 @@ public class Player : MonoBehaviour
     [Header("GroundCheck")]
     private LayerMask groundLayer;
     [SerializeField] private Transform groundCheck;
-    private float groundCheckRadius = 0.1f;
-    private bool isGrounded = true;
+    //private float groundCheckRadius = 0.5f;
+    private Vector2 groundCheckSize = new Vector2(1.3f, 0.2f);
+    private float groundCheckAngle = 0f;
+    [SerializeField] private bool isGrounded = true;
 
     private float? startHeightOfJump = null;
-    private float currentHeightOfJump;
+    [SerializeField] private float currentHeightOfJump;
+    private bool isJoystickHeld = false;
+    private bool canContinueJump = false;
 
     private bool isInvincible = false;
     private float invincibilityDuration = 1.5f;
@@ -33,7 +37,7 @@ public class Player : MonoBehaviour
     [SerializeField] private Button leftAttackButton;
     [SerializeField] private Button rightAttackButton;
 
-    private Rigidbody2D rigidbody;
+    private Rigidbody2D rb;
     private SpriteRenderer spriteRenderer;
     private Animator animator;
 
@@ -47,7 +51,7 @@ public class Player : MonoBehaviour
 
     private void Awake()
     {
-        rigidbody = GetComponent<Rigidbody2D>();
+        rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         animator = GetComponent<Animator>();
 
@@ -89,7 +93,11 @@ public class Player : MonoBehaviour
                 Move();
             }
 
-            if (joystick.Vertical > 0.5f && currentHeightOfJump < maxHeightOfJump)
+            if(isGrounded && joystick.Vertical > 0.5f && currentHeightOfJump < maxHeightOfJump && !isJoystickHeld)
+            {
+                StartJump();
+            }
+            else if (joystick.Vertical > 0.5f && currentHeightOfJump < maxHeightOfJump && canContinueJump)
             {
                 Jump();
             }
@@ -97,19 +105,43 @@ public class Player : MonoBehaviour
             if(transform.position.y < deathBorder)
             {
                 Die();
-            }    
+            }
+
+            if (isGrounded && State == States.jump)
+            {
+                Debug.LogWarning(
+                    $"Grounded but State is jump. " +
+                    $"Vertical input: {joystick.Vertical}");
+            }
+
+            if (State == States.jump && Mathf.Abs(rb.linearVelocity.y) < 0.1f)
+            {
+                Debug.Log(
+                    $"J5: grounded={isGrounded}, " +
+                    $"attacking={isAttacking}, " +
+                    $"dying={isDying}, " +
+                    $"vertical={joystick.Vertical:F2}, " +
+                    $"velocityY={rb.linearVelocity.y:F2}"
+                );
+            }
+
+            if(isJoystickHeld && joystick.Vertical <= 0.5f)
+            {
+                canContinueJump = false;
+            }
+            isJoystickHeld = joystick.Vertical > 0.5f;
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if(collision.gameObject.CompareTag("Coin"))
-        {
-            Debug.Log("Enter coin collision");
-            UIManagerInGame.Instance.AddCoin();
-            Destroy(collision.gameObject);
-        }
-    }
+    //private void OnTriggerEnter2D(Collider2D collision)
+    //{
+    //    if(collision.gameObject.CompareTag("Coin"))
+    //    {
+    //        Debug.Log("Enter coin collision");
+    //        UIManagerInGame.Instance.AddCoin();
+    //        Destroy(collision.gameObject);
+    //    }
+    //}
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
@@ -120,6 +152,15 @@ public class Player : MonoBehaviour
                 enemy.TakeDamage(damage);
             }
         }
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        if (groundCheck == null)
+            return;
+
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireCube(groundCheck.position, groundCheckSize);
     }
 
     private void Move()
@@ -136,26 +177,40 @@ public class Player : MonoBehaviour
         spriteRenderer.flipX = direction.x < 0.0f;
     }
 
+    private void StartJump()
+    {
+        Debug.Log("State jumpStart");
+        State = States.jumpStart;
+        canContinueJump = true;
+    }
+
     private void Jump()
     {
-        if(State != States.jumpStart && State != States.jump)
-        {
-            Debug.Log("State jumpStart");
-            State = States.jumpStart;
-        }
-        else if(State == States.jumpStart)
-        {
-            Debug.Log("State jump");
-            State = States.jump;
-        }
+        //if(State != States.jumpStart && State != States.jump)
+        //{
+        //    Debug.Log("State jumpStart");
+        //    State = States.jumpStart;
+        //}
+        //if(State == States.jumpStart)
+        //{
+        //    Debug.Log("State jump");
+        //    State = States.jump;
+        //}
+
+        State = States.jump;
 
         if(currentHeightOfJump == 0f && startHeightOfJump == null)
         {
             startHeightOfJump = transform.position.y;
         }
 
-        rigidbody.linearVelocity = Vector2.up * jumpForce;
+        rb.linearVelocity = Vector2.up * jumpForce;
         currentHeightOfJump = (float)(transform.position.y - startHeightOfJump);
+
+        if(currentHeightOfJump >= maxHeightOfJump)
+        {
+            canContinueJump = false;
+        }
     }
 
     private void Attack(bool isRight)
@@ -283,7 +338,7 @@ public class Player : MonoBehaviour
 
     private void CheckGround()
     {
-        isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
+        isGrounded = Physics2D.OverlapBox(groundCheck.position, groundCheckSize, groundCheckAngle, groundLayer);
     }
 }
 

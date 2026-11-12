@@ -5476,7 +5476,7 @@ GameObject:
   - component: {fileID: 765482433}
   - component: {fileID: 765482432}
   m_Layer: 5
-  m_Name: Image (2)
+  m_Name: Left Attack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7948,7 +7948,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1113118508
 RectTransform:
   m_ObjectHideFlags: 0
@@ -10927,7 +10927,7 @@ GameObject:
   - component: {fileID: 1514671939}
   - component: {fileID: 1514671938}
   m_Layer: 5
-  m_Name: Image (1)
+  m_Name: RIght Attack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
